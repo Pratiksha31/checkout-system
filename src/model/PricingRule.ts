@@ -1,3 +1,4 @@
 export interface PricingRule {
-  apply: (items: string[]) => number;
+  item: string;
+  apply(count: number): number;
 }

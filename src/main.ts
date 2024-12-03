@@ -8,7 +8,6 @@ co.scan("atv");
 co.scan("atv");
 co.scan("atv");
 co.scan("vga");
-// co.scan("va");
 console.log(co.total()); // Total expected: $249.00
 // co.scan("atv");
 // co.scan("ipd");

@@ -2,10 +2,12 @@ import { catalog } from "../catalog";
 import { PricingRule } from "../model/PricingRule";
 
 export class AppleTVDeal implements PricingRule {
-  apply(items: string[]): number {
-    const appleTVCount = items.filter((item) => item === "atv").length;
-    const discountedCount = Math.floor(appleTVCount / 3);
-    const fullPriceCount = appleTVCount - discountedCount;
-    return fullPriceCount * catalog.atv.price;
+  item = "atv";
+
+  apply(count: number): number {
+    return (
+      Math.floor(count / 3) * 2 * catalog[this.item].price +
+      (count % 3) * catalog[this.item].price
+    );
   }
 }

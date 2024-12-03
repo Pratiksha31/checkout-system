@@ -3,10 +3,10 @@ import { PricingRule } from "./model/PricingRule";
 
 export class Checkout {
   private items: string[] = [];
-  private pricingRules: PricingRule[];
+  private pricingRules: Map<string, PricingRule>;
 
   constructor(pricingRules: PricingRule[]) {
-    this.pricingRules = pricingRules;
+    this.pricingRules = new Map(pricingRules.map((rule) => [rule.item, rule]));
   }
 
   scan(item: string) {
@@ -16,28 +16,20 @@ export class Checkout {
   total(): number {
     let total = 0;
 
-    for (const rule of this.pricingRules) {
-      total += rule.apply(this.items);
-    }
+    const itemCounts = this.items.reduce((counts, item) => {
+      counts[item] = (counts[item] || 0) + 1;
+      return counts;
+    }, {} as Record<string, number>);
 
-    const remainingItems = this.items.filter(
-      (item) =>
-        !this.pricingRules.some(
-          (rule) => rule.constructor.name === this.getRuleClassName(item)
-        )
-    );
-    for (const item of remainingItems) {
-      if (item in catalog) {
-        total += catalog[item as keyof typeof catalog].price;
+    for (const [item, count] of Object.entries(itemCounts)) {
+      const rule = this.pricingRules.get(item);
+      if (rule) {
+        total += rule.apply(count);
+      } else if (item in catalog) {
+        total += count * catalog[item as keyof typeof catalog].price;
       }
     }
 
     return total;
-  }
-
-  private getRuleClassName(item: string): string {
-    if (item === "atv") return "AppleTVDeal";
-    if (item === "ipd") return "SuperIPadBulkDiscount";
-    return "";
   }
 }

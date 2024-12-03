@@ -1,11 +1,13 @@
 import { catalog } from "../catalog";
 import { PricingRule } from "../model/PricingRule";
+
 export class SuperIPadBulkDiscount implements PricingRule {
-  apply(items: string[]): number {
-    const ipdCount = items.filter((item) => item === "ipd").length;
-    if (ipdCount > 4) {
-      return ipdCount * 499.99;
+  item = "ipd";
+
+  apply(count: number): number {
+    if (count > 4) {
+      return count * (catalog[this.item].price - 50);
     }
-    return ipdCount * catalog.ipd.price;
+    return count * catalog[this.item].price;
   }
 }
